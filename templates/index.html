@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Submit Form -->
+<div class="card">
+  <h2>🔍 Review a Pull Request</h2>
+  <input
+    type="text"
+    id="pr-url-input"
+    placeholder="https://github.com/owner/repo/pull/123"
+  />
+  <button id="submit-btn" onclick="submitReview()">Start Review</button>
+  <p id="error-msg" style="color:#ff7b72; font-size:13px; margin-top:8px; display:none;"></p>
+</div>
+
+<!-- Active Job Status (shown after submit) -->
+<div id="job-status-card" class="card" style="display:none;">
+  <h2>⏳ Review in Progress</h2>
+  <p id="job-pr-url" style="font-size:13px; color:#8b949e; margin-bottom:12px;"></p>
+  <div style="display:flex; align-items:center; gap:8px;">
+    <span class="spinner" id="status-spinner"></span>
+    <span id="status-text" style="font-size:14px;">Starting...</span>
+  </div>
+  <div style="margin-top:16px;">
+    <a id="view-report-link" href="#" style="display:none;">
+      <button>View Full Report →</button>
+    </a>
+  </div>
+</div>
+
+<!-- Past Reviews List -->
+<div class="card">
+  <h2>📋 Past Reviews</h2>
+  {% if jobs %}
+    {% for job in jobs %}
+    <div class="job-row">
+      <div>
+        <div style="font-size:13px; color:#e6edf3; margin-bottom:4px;">
+          {{ job.pr_url | truncate(60) }}
+        </div>
+        <div style="font-size:12px; color:#8b949e;">
+          {{ job.created_at.strftime('%Y-%m-%d %H:%M') }}
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span class="badge status-{{ job.status }}">{{ job.status }}</span>
+        <a href="/review/{{ job.id }}">View →</a>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">
+      No reviews yet. Submit a PR URL above to get started.
+    </div>
+  {% endif %}
+</div>
+
+<script>
+  let pollingInterval = null;
+
+  function showError(msg) {
+    const el = document.getElementById('error-msg');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  function hideError() {
+    document.getElementById('error-msg').style.display = 'none';
+  }
+
+  function statusLabel(status) {
+    const labels = {
+      'pending':             '⏳ Pending...',
+      'fetching':            '📡 Fetching PR diff from GitHub...',
+      'analyzing_security':  '🔒 Analyzing security issues...',
+      'analyzing_style':     '🎨 Analyzing code style...',
+      'analyzing_logic':     '🧠 Analyzing logic bugs...',
+      'synthesizing':        '✍️  Synthesizing final report...',
+      'complete':            '✅ Review complete!',
+      'failed':              '❌ Review failed'
+    };
+    return labels[status] || status;
+  }
+
+  async function submitReview() {
+    hideError();
+    const url = document.getElementById('pr-url-input').
+    

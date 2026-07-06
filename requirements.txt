@@ -1,0 +1,31 @@
+# Web framework
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+jinja2==3.1.4
+python-multipart==0.0.9
+
+# Database
+sqlmodel==0.0.19
+aiosqlite==0.20.0
+
+# HTTP client
+httpx==0.27.0
+
+# AI
+huggingface-hub==0.23.0
+
+# Config
+python-dotenv==1.0.1
+
+# Testing
+pytest==8.2.0
+pytest-asyncio==0.23.7
+pytest-mock==3.14.0
+httpx==0.27.0
+
+# Linting
+ruff==0.4.4
+
+# Playwright
+playwright==1.44.0
+pytest-playwright==0.5.0pydantic-settings==2.2.1
