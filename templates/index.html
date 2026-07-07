@@ -85,5 +85,104 @@
 
   async function submitReview() {
     hideError();
-    const url = document.getElementById('pr-url-input').
+
+    const url = document.getElementById("pr-url-input").value.trim();
+
+    if (!url) {
+        showError("Please enter a GitHub Pull Request URL.");
+        return;
+    }
+
+    const button = document.getElementById("submit-btn");
+    button.disabled = true;
+    button.innerText = "Starting...";
+
+    try {
+        const response = await fetch("/review", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                pr_url: url
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            showError(data.detail || "Unable to start review.");
+            button.disabled = false;
+            button.innerText = "Start Review";
+            return;
+        }
+
+        document.getElementById("job-status-card").style.display = "block";
+        document.getElementById("job-pr-url").textContent = data.pr_url;
+        document.getElementById("status-text").textContent = statusLabel(data.status);
+
+        pollStatus(data.id);
+
+    } catch (err) {
+        console.error(err);
+        showError("Unable to connect to server.");
+        button.disabled = false;
+        button.innerText = "Start Review";
+    }
+}
+
+async function pollStatus(jobId) {
+
+    if (pollingInterval) {
+        clearInterval(pollingInterval);
+    }
+
+    pollingInterval = setInterval(async () => {
+
+        try {
+
+            const response = await fetch(`/review/${jobId}/status`);
+            const data = await response.json();
+
+            document.getElementById("status-text").textContent =
+                statusLabel(data.status);
+
+            if (data.status === "complete") {
+
+                clearInterval(pollingInterval);
+
+                document.getElementById("status-spinner").style.display = "none";
+
+                const link = document.getElementById("view-report-link");
+                link.href = `/review/${jobId}`;
+                link.style.display = "inline";
+
+                document.getElementById("submit-btn").disabled = false;
+                document.getElementById("submit-btn").innerText =
+                    "Start Review";
+
+            }
+
+            if (data.status === "failed") {
+
+                clearInterval(pollingInterval);
+
+                showError(data.error_message || "Review failed.");
+
+                document.getElementById("submit-btn").disabled = false;
+                document.getElementById("submit-btn").innerText =
+                    "Start Review";
+            }
+
+        } catch (err) {
+            console.error(err);
+            clearInterval(pollingInterval);
+            showError("Lost connection while polling review status.");
+        }
+
+    }, 3000);
+}
+</script>
+
+{% endblock %}
     

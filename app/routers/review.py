@@ -31,11 +31,19 @@ def run_agent_in_background(job_id: str, pr_url: str):
 
 
 @router.get("/", response_class=HTMLResponse)
-def home(request: Request):
-    """Serve the main dashboard page."""
+def home(
+    request: Request,
+    session: Session = Depends(get_session)
+):
+    statement = select(ReviewJob).order_by(ReviewJob.created_at.desc())
+    jobs = session.exec(statement).all()
+
     return templates.TemplateResponse(
         "index.html",
-        {"request": request}
+        {
+            "request": request,
+            "jobs": jobs
+        }
     )
 
 

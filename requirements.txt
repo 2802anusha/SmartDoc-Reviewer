@@ -16,6 +16,8 @@ huggingface-hub==0.23.0
 
 # Config
 python-dotenv==1.0.1
+pydantic==2.7.1
+pydantic-settings==2.2.1
 
 # Testing
 pytest==8.2.0
@@ -28,4 +30,4 @@ ruff==0.4.4
 
 # Playwright
 playwright==1.44.0
-pytest-playwright==0.5.0pydantic-settings==2.2.1
+pytest-playwright==0.5.0

@@ -1,7 +1,12 @@
-venv/
-.env
-__pycache__/
-*.pyc.env
-venv/
+# Python
 __pycache__/
 *.pyc
+
+# Virtual environment
+venv/
+
+# Environment variables
+.env
+
+# SQLite databases
+*.db

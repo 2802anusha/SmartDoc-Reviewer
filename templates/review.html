@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card">
+
+<h2>Review Report</h2>
+
+<p><strong>PR:</strong> {{ job.pr_url }}</p>
+
+<p><strong>Status:</strong> {{ job.status }}</p>
+
+{% if report %}
+
+<h3>Overall Score</h3>
+
+<p>{{ report.overall_score }}/100</p>
+
+<h3>Summary</h3>
+
+<p>{{ report.summary }}</p>
+
+{% else %}
+
+<p>Review is still running...</p>
+
+{% endif %}
+
+<br>
+
+<a href="/">← Back to Dashboard</a>
+
+</div>
+
+{% endblock %}
